@@ -9,16 +9,31 @@ let PORT = 3001 || process.env.PORT;
 
 app.use(express.json());
 // app.use(bodyParser.json()); // same as express.json()
-
+let events = [];
 app.use(
   "/graphql",
   graphqlHTTP({
     schema: buildSchema(`
+  type Event {
+    _id: ID!
+    title: String!
+    description: String!
+    price: Float!
+    date: String!
+  }
+
+  input EventInput {
+    title: String!
+    description: String!
+    price: Float!
+    date: String!
+  }
+
   type RootQuery {
-    events: [String!]!
+    events: [Event!]!
   }
   type RootMutation {
-    createEvent(name: String!): String
+    createEvent(eventInput:EventInput): Event
   }
     schema {
       query: RootQuery
@@ -28,10 +43,19 @@ app.use(
     rootValue: {
       //points to all the resolver functions
       events: () => {
-        return ["event1", "event2"];
+        return events;
       },
       createEvent: (args) => {
-        return `event created: ${args.name}`;
+        const event = {
+          _id: Math.random().toString(),
+          title: args.eventInput.title,
+          description: args.eventInput.description,
+          price: +args.eventInput.price,
+          date: args.eventInput.date,
+        };
+        events.push(event);
+        console.log(event.title);
+        return event;
       },
     },
     graphiql: true,
