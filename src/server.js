@@ -56,54 +56,58 @@ app.use(
       mutation: RootMutation
     }
   `),
+    //RootValue points to all the resolver functions
     rootValue: {
-      //points to all the resolver functions
       events: async () => {
-        return await EventModel.find()
-          .then((events) => {
-            console.log(...events);
-            return events;
-            // return events.map((event) => { // leave out all the meta data from the mongoose object collection we get collection
-            //   return { ...event._doc , _id: event.id }; // this ID is translated by mongoose to an string
-            // });
-          })
-          .catch((err) => {
-            console.log(err);
-            throw err;
-          });
+        try {
+          const events = await EventModel.find();
+          return events;
+        } catch (error) {
+          console.log(error);
+          throw new Error(error);
+        }
       },
       createEvent: async (args) => {
-        const event = await new EventModel({
-          title: args.eventInput.title,
-          description: args.eventInput.description,
-          price: +args.eventInput.price, // making a floating number
-          date: new Date(args.eventInput.date),
-        });
-        return await event
-          .save()
-          .then((result) => {
-            console.log(result);
-            return { ...result._doc, _id: result._id.toString() }; // work around for the mongoose object to string conversion
-          })
-          .catch((err) => {
-            console.log(err);
-            throw err;
+        try {
+          const event = await new EventModel({
+            title: args.eventInput.title,
+            description: args.eventInput.description,
+            price: +args.eventInput.price, // making a floating number
+            date: new Date(args.eventInput.date),
+            creator: "626ebc5f7fff293520e8f332",
           });
+          await event.save();
+          const user = await UserModel.findById(event.creator);
+          if (!user) {
+            throw new Error("User not found");
+          }
+          user.createdEvents.push(event);
+          await user.save();
+          return event;
+        } catch (error) {
+          console.log(error);
+          throw new Error(error);
+        }
       },
       createUser: async (args) => {
-        if (await UserModel.findOne({ email: args.userInput.email })) {
-          throw new Error("User already exists");
+        try {
+          if (await UserModel.findOne({ email: args.userInput.email })) {
+            throw new Error("User already exists");
+          }
+          args.userInput.password = await bcrypt.hash(
+            args.userInput.password,
+            12
+          ); // hashing the password
+          const user = await new UserModel({
+            email: args.userInput.email,
+            password: args.userInput.password,
+          });
+          const { email, password } = await user.save();
+          return { email, password: null };
+        } catch (error) {
+          console.log(error);
+          throw error;
         }
-        args.userInput.password = await bcrypt.hash(
-          args.userInput.password,
-          12
-        ); // hashing the password
-        const user = await new UserModel({
-          email: args.userInput.email,
-          password: args.userInput.password,
-        });
-        const { email, password } = await user.save();
-        return { email, password: null };
       },
     },
     graphiql: true,
