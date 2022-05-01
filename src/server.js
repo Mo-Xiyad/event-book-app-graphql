@@ -14,6 +14,33 @@ let PORT = 3001 || process.env.PORT;
 app.use(express.json());
 // app.use(bodyParser.json()); // same as express.json()
 
+const events = async (eventIds) => {
+  // This function is called when we call the user.createdEvents property. It is passed the eventIds array. This function is binded to the User function
+  const events = await EventModel.find({ _id: { $in: eventIds } }); // $in is a mongo operator that allows us to query for an array of ids
+  return events.map((event) => {
+    return {
+      ...event._doc,
+      creator: user.bind(this, event.creator), // this is a function that returns the user object. binding to the user function
+    };
+  });
+};
+const user = async (userId) => {
+  try {
+    if (userId) {
+      const user = await UserModel.findById(userId);
+
+      return {
+        ...user._doc,
+        password: null,
+        createdEvents: events.bind(this, user._doc.createdEvents.toString()),
+      };
+      // return { ...user, createdEvents: events.bind(this, user.createdEvents) };
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error("Error finding user");
+  }
+};
 app.use(
   "/graphql",
   graphqlHTTP({
@@ -24,11 +51,13 @@ app.use(
     description: String!
     price: Float!
     date: String!
+    creator: User!
   }
   type User {
     _id: ID!
     email: String!
     password: String
+    createdEvents: [Event!]
   }
 
   input EventInput {
@@ -60,8 +89,11 @@ app.use(
     rootValue: {
       events: async () => {
         try {
+          // const events = await EventModel.find().populate("creator"); //populate is a mongoose method that allows us to populate the creator field with the user data
           const events = await EventModel.find();
-          return events;
+          return events.map((event) => {
+            return { ...event, creator: user.bind(this, event.creator) };
+          });
         } catch (error) {
           console.log(error);
           throw new Error(error);
