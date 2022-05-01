@@ -4,6 +4,8 @@ import { graphqlHTTP } from "express-graphql"; //middleware function
 import { buildSchema } from "graphql";
 import mongoose from "mongoose";
 import EventModel from "../models/events.js";
+import UserModel from "../models/users.js";
+import bcrypt from "bcrypt";
 
 const app = express();
 
@@ -23,6 +25,11 @@ app.use(
     price: Float!
     date: String!
   }
+  type User {
+    _id: ID!
+    email: String!
+    password: String
+  }
 
   input EventInput {
     title: String!
@@ -30,12 +37,19 @@ app.use(
     price: Float!
     date: String!
   }
+  input UserInput {
+    email: String!
+    password: String!
+  }
 
   type RootQuery {
     events: [Event!]!
+    users: [User!]!
   }
+
   type RootMutation {
-    createEvent(eventInput:EventInput): Event
+    createEvent(eventInput: EventInput): Event
+    createUser(userInput: UserInput): User
   }
     schema {
       query: RootQuery
@@ -75,6 +89,21 @@ app.use(
             console.log(err);
             throw err;
           });
+      },
+      createUser: async (args) => {
+        if (await UserModel.findOne({ email: args.userInput.email })) {
+          throw new Error("User already exists");
+        }
+        args.userInput.password = await bcrypt.hash(
+          args.userInput.password,
+          12
+        ); // hashing the password
+        const user = await new UserModel({
+          email: args.userInput.email,
+          password: args.userInput.password,
+        });
+        const { email, password } = await user.save();
+        return { email, password: null };
       },
     },
     graphiql: true,
