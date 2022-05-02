@@ -55,20 +55,25 @@ const graphQlResolvers = {
         description: args.eventInput.description,
         price: +args.eventInput.price, // making a floating number
         date: new Date(args.eventInput.date),
-        creator: "626ebc5f7fff293520e8f332",
+        creator: "627015b71c6bc48652c21246",
       });
-      const savedEvent = await event.save();
-      const eventCreatedUser = await UserModel.findById(event.creator);
-      if (!eventCreatedUser) {
+      const result = await event.save();
+
+      let createdEvent = {
+        ...result._doc,
+        date: new Date(result._doc.date).toISOString(),
+        creator: user.bind(this, result._doc.creator),
+      };
+
+      const creator = await UserModel.findById(event.creator);
+      if (!creator) {
         throw new Error("User not found");
       }
-      eventCreatedUser.createdEvents.push(event); // updating the user table after the event is created "createdEvents.push()" is a mongoose method
-      await eventCreatedUser.save();
-      return {
-        ...savedEvent._doc,
-        date: new Date(savedEvent._doc.date).toISOString(),
-        creator: user.bind(this, savedEvent._doc.creator),
-      };
+
+      creator.createdEvents.push(event); // updating the user table after the event is created "createdEvents.push()" is a mongoose method
+      await creator.save();
+
+      return createdEvent;
     } catch (error) {
       console.log(error);
       throw new Error(error);
@@ -84,8 +89,8 @@ const graphQlResolvers = {
         email: args.userInput.email,
         password: args.userInput.password,
       });
-      const { email, password } = await user.save();
-      return { email, password: null };
+      const { email, password, _id } = await user.save();
+      return { email, password: null, _id };
     } catch (error) {
       console.log(error);
       throw error;
