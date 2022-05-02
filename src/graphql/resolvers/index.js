@@ -1,5 +1,6 @@
 import EventModel from "../../../models/events.js";
 import UserModel from "../../../models/users.js";
+import BookingModel from "../../../models/bookings.js";
 import bcrypt from "bcrypt";
 
 const events = async (eventIds) => {
@@ -31,6 +32,19 @@ const user = async (userId) => {
   }
 };
 
+const singleEvent = async (eventId) => {
+  try {
+    const event = await EventModel.findById(eventId);
+    return {
+      ...event._doc,
+      creator: user.bind(this, event._doc.creator),
+    };
+  } catch (error) {
+    console.log(error);
+    throw new Error("Error finding event");
+  }
+};
+
 const graphQlResolvers = {
   events: async () => {
     try {
@@ -43,6 +57,75 @@ const graphQlResolvers = {
           creator: user.bind(this, event._doc.creator),
         };
       });
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  },
+  users: async (args) => {
+    try {
+      const users = await UserModel.find();
+      return users.map((user) => {
+        return {
+          ...user._doc,
+          password: null,
+          createdEvents: events.bind(this, user._doc.createdEvents),
+        };
+      });
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  },
+  bookings: async (args) => {
+    try {
+      const bookings = await BookingModel.find();
+      return bookings.map((booking) => {
+        return {
+          ...booking._doc,
+          user: user.bind(this, booking._doc.user),
+          event: singleEvent.bind(this, booking._doc.event),
+          createdAt: new Date(booking._doc.createdAt).toISOString(),
+          updatedAt: new Date(booking._doc.updatedAt).toISOString(),
+        };
+      });
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  },
+  bookEvent: async (args) => {
+    try {
+      const fetchedEvent = await EventModel.findOne({ _id: args.eventId });
+      const booking = new BookingModel({
+        user: "5f2d9c7b8a5b5c7d5e5e5c6d",
+        event: fetchedEvent,
+      });
+      const result = await booking.save();
+      return {
+        ...result._doc,
+        user: user.bind(this, result._doc.user),
+        event: singleEvent.bind(this, result._doc.event),
+        createdAt: new Date(result._doc.createdAt).toISOString(),
+        updatedAt: new Date(result._doc.updatedAt).toISOString(),
+      };
+    } catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  },
+  cancelBooking: async (args) => {
+    try {
+      const booking = await BookingModel.findById(args.bookingId).populate(
+        "event"
+      );
+      const event = booking.event;
+      await BookingModel.deleteOne({ _id: args.bookingId });
+      return {
+        ...event._doc,
+        date: new Date(event._doc.date).toISOString(),
+        creator: user.bind(this, event._doc.creator),
+      };
     } catch (error) {
       console.log(error);
       throw new Error(error);

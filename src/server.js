@@ -26,6 +26,10 @@ app.use(
 mongoose.connect(process.env.MONGO_DB_URL);
 
 mongoose.connection.on("connected", () => {
+  const { bookings, users, events } = mongoose.connection.collections;
+  // users.drop();
+  // bookings.drop();
+  // events.drop();
   console.log("📊 Mongo Connected❗️");
   app.listen(PORT, () => {
     console.log(
