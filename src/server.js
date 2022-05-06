@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import { graphqlHTTP } from "express-graphql"; //middleware function
 import mongoose from "mongoose";
 
-import graphQlResolvers from "./graphql/resolvers/index.js";
+import graphQlRootResolvers from "./graphql/resolvers/index.js";
 import graphQlSchemas from "./graphql/schema/index.js";
 
 const app = express();
@@ -18,7 +18,7 @@ app.use(
   graphqlHTTP({
     schema: graphQlSchemas,
     //RootValue points to all the resolver functions
-    rootValue: graphQlResolvers,
+    rootValue: graphQlRootResolvers,
     graphiql: true,
   })
 );
