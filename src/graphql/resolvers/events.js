@@ -1,6 +1,6 @@
 import { dateToString } from "../../helpers/date.js";
-import EventModel from "../../../models/events.js";
-import UserModel from "../../../models/users.js";
+import EventModel from "../../models/events.js";
+import UserModel from "../../models/users.js";
 import { transformEvent } from "./merge.js";
 
 const eventResolver = {

@@ -1,5 +1,5 @@
-import BookingModel from "../../../models/bookings.js";
-import EventModel from "../../../models/events.js";
+import BookingModel from "../../models/bookings.js";
+import EventModel from "../../models/events.js";
 import { transformBooking, transformEvent } from "./merge.js";
 
 const bookingResolver = {

@@ -1,5 +1,5 @@
-import UserModel from "../../../models/users.js";
-import EventModel from "../../../models/events.js";
+import UserModel from "../../models/users.js";
+import EventModel from "../../models/events.js";
 import { dateToString } from "../../helpers/date.js";
 
 export const transformEvent = (event) => {
