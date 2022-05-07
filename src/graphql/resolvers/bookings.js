@@ -3,7 +3,13 @@ import EventModel from "../../../models/events.js";
 import { transformBooking, transformEvent } from "./merge.js";
 
 const bookingResolver = {
-  bookings: async (args) => {
+  bookings: async (args, req) => {
+    // ! this if statement is to check if the user is logged in. It is the "CheckAuth" middleware
+    if (!req.isAuthenticated) {
+      // console.log(req);
+      // if not authenticated we cannot create an event
+      throw new Error("You must be logged in to get the bookings information");
+    }
     try {
       const bookings = await BookingModel.find();
       return bookings.map((booking) => {
@@ -14,11 +20,16 @@ const bookingResolver = {
       throw new Error(error);
     }
   },
-  bookEvent: async (args) => {
+  bookEvent: async (args, req) => {
+    // ! this if statement is to check if the user is logged in. It is the "CheckAuth" middleware
+    if (!req.isAuthenticated) {
+      // if not authenticated we cannot create an event
+      throw new Error("You must be logged in to perform this action");
+    }
     try {
       const fetchedEvent = await EventModel.findOne({ _id: args.eventId });
       const booking = new BookingModel({
-        user: "62759eeec86cfa4765951ec5",
+        user: req.userId,
         event: fetchedEvent,
       });
       const result = await booking.save();
@@ -28,7 +39,12 @@ const bookingResolver = {
       throw new Error(error);
     }
   },
-  cancelBooking: async (args) => {
+  cancelBooking: async (args, req) => {
+    // ! this if statement is to check if the user is logged in. It is the "CheckAuth" middleware
+    if (!req.isAuthenticated) {
+      // if not authenticated we cannot create an event
+      throw new Error("You must be logged in to perform this action");
+    }
     try {
       const booking = await BookingModel.findById(args.bookingId).populate(
         "event"

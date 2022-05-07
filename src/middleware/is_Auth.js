@@ -9,22 +9,15 @@ const checkAuth = async (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1]; // Authorization: Bearer token
+  //   console.log(authHeader);
   if (!token || token === "") {
     req.isAuthenticated = false;
     return next();
   }
+
+  let decodedToken;
   try {
-    let decodedToken;
-    decodedToken = jwt.verify(
-      token,
-      process.env.JWT_SECRET_SECRET_KEY,
-      (err, decodedToken) => {
-        if (err) {
-          req.isAuthenticated = false;
-          rej(err);
-        } else res(decodedToken);
-      }
-    );
+    decodedToken = jwt.verify(token, process.env.JWT_SECRET_SECRET_KEY);
   } catch (error) {
     req.isAuthenticated = false;
     return next();

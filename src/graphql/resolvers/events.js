@@ -29,7 +29,7 @@ const eventResolver = {
         description: args.eventInput.description,
         price: +args.eventInput.price, // making a floating number
         date: dateToString(args.eventInput.date),
-        creator: "62759eeec86cfa4765951ec5",
+        creator: req.userId,
       });
       const result = await event.save();
       let createdEvent = transformEvent(result); // DRY principle - we can use the same function to transform the data

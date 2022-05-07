@@ -12,7 +12,11 @@ const app = express();
 let PORT = 3001 || process.env.PORT;
 
 app.use(express.json());
-// app.use(bodyParser.json()); // same as express.json()
+app.use(bodyParser.json()); // same as express.json()
+// configure app to use bodyParser()
+// this will let us get the data from a POST
+// exclusing the route to graphql
+app.use(bodyParser.text({ type: "application/graphql" }));
 
 app.use(checkAuth);
 
