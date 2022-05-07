@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 
 import graphQlRootResolvers from "./graphql/resolvers/index.js";
 import graphQlSchemas from "./graphql/schema/index.js";
+import checkAuth from "./middleware/is_Auth.js";
 
 const app = express();
 
@@ -12,6 +13,8 @@ let PORT = 3001 || process.env.PORT;
 
 app.use(express.json());
 // app.use(bodyParser.json()); // same as express.json()
+
+app.use(checkAuth);
 
 app.use(
   "/graphql",

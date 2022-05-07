@@ -81,11 +81,7 @@ const authResolver = {
       process.env.JWT_SECRET_SECRET_KEY,
       { expiresIn: "1h" }
     );
-    console.log(token);
     return { userId: user.id, token: token, tokenExpiration: 1 };
-    // userId: ID!
-    // token: String!
-    // tokenExpiration: Int!
   },
 };
 export default authResolver;

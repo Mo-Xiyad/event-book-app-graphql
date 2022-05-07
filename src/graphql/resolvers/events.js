@@ -17,8 +17,13 @@ const eventResolver = {
     }
   },
 
-  createEvent: async (args) => {
+  createEvent: async (args, req) => {
     try {
+      // ! this if statement is to check if the user is logged in. It is the "CheckAuth" middleware
+      if (!req.isAuthenticated) {
+        // if not authenticated we cannot create an event
+        throw new Error("You must be logged in to perform this action");
+      }
       const event = await new EventModel({
         title: args.eventInput.title,
         description: args.eventInput.description,
