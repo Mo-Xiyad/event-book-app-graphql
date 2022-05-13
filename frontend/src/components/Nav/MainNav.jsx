@@ -11,7 +11,7 @@ const MainNav = () => {
     { name: `Events`, path: `/events` },
   ];
   return (
-    <header className="bg-white fixed-top border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
+    <header className="bg-white fixed-top border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-teal-100">
       <div className="container flex flex-wrap justify-between items-center mx-auto py-2">
         <div>
           <h1>YoYo Event</h1>
