@@ -2,17 +2,32 @@ import express from "express";
 import bodyParser from "body-parser";
 import { graphqlHTTP } from "express-graphql"; //middleware function
 import mongoose from "mongoose";
+import cors from "cors";
 
 import graphQlRootResolvers from "./graphql/resolvers/index.js";
 import graphQlSchemas from "./graphql/schema/index.js";
 import checkAuth from "./middleware/is_Auth.js";
 
 const app = express();
-
 let PORT = 3001 || process.env.PORT;
 
+const whitelist = [process.env.FE_LOCAL_URL, process.env.FE_PROD_URL];
+const corsOptions = {
+  origin: function (origin, callback) {
+    console.log("CURRENT ORIGIN AT:", origin);
+    if (whitelist.indexOf(origin) !== -1) {
+      // if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
-app.use(bodyParser.json()); // same as express.json()
+// app.use(bodyParser.json()); // same as express.json()
+
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 // exclusing the route to graphql
