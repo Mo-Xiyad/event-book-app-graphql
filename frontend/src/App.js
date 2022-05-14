@@ -12,7 +12,7 @@ function App() {
   const { token } = useSelector((state) => state.auth);
   return (
     <BrowserRouter>
-      <div className="w-screen bg-primary font-mono">
+      <div className="w-screen bg-white font-mono">
         <MainNav />
         <Routes>
           <Route path="/" element={!token && <Navigate to="/auth" />} />

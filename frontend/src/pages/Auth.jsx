@@ -68,6 +68,16 @@ const Auth = () => {
   return (
     <div className="flex h-screen justify-center">
       <div className="w-full max-w-sm self-center">
+        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+          {isLogin ? (
+            <h1 className="text-3xl font-bold text-center"> Sign in </h1>
+          ) : (
+            <h1 className="text-3md font-bold text-center">
+              {" "}
+              Fill in the form to create an account
+            </h1>
+          )}
+        </div>
         <form
           className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
           onSubmit={(e) => submitHandler(e)}
@@ -117,14 +127,15 @@ const Auth = () => {
               className="bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
-              Submit
+              {isLogin ? "login" : "Create"}
             </button>
-            <Link
-              className="inline-block align-baseline font-bold text-sm text-bg-primary hover:text-blue-800"
-              to={`/`}
+            <button
+              className="bg-zinc-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
             >
-              {!auth.token ? "Switch to Signup" : "Switch to Signin"}
-            </Link>
+              {isLogin ? "Switch to Signup" : "Switch to Signin"}
+            </button>
           </div>
         </form>
       </div>

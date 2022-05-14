@@ -16,13 +16,13 @@ const MainNav = (props) => {
     { name: `Events`, path: `/events` },
   ];
   return (
-    <header className="bg-white fixed-top border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-teal-100">
-      <div className="container flex flex-wrap justify-between items-center mx-auto py-2">
+    <header className="bg-white fixed-top border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-teal-100 border-b-2 border-secondary">
+      <div className=" flex flex-wrap justify-between items-center py-2">
         <div>
           <h1>YoYo Event</h1>
         </div>
         <nav className="">
-          <ul className="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium border-b pb-2.5 px-2 rounded">
+          <ul className="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium rounded">
             {auth.token === null &&
               menuItems.map((items, index) => (
                 <li key={index}>
@@ -30,8 +30,8 @@ const MainNav = (props) => {
                     to={items.path}
                     className={
                       pathname === items.path
-                        ? "rounded -mb-px mr-1 px-3 py-2 border-slate-300 border-l border-t border-r rounded-t text-white bg-secondary"
-                        : "rounded-lg px-2 py-2 text-slate-700 font-medium hover:bg-slate-100 hover:text-slate-900"
+                        ? "rounded -mb-px mr-1 px-3 py-2 border-slate-300 border-l border-t border-r rounded-t text-white hover:text-primary bg-secondary"
+                        : "rounded-lg px-2 py-2 text-slate-700 font-medium hover:bg-tertiary hover:text-slate-900"
                     }
                   >
                     {items.name}
@@ -48,8 +48,8 @@ const MainNav = (props) => {
                       to={items.path}
                       className={
                         pathname === items.path
-                          ? "rounded -mb-px mr-1 px-3 py-2 border-slate-300 border-l border-t border-r rounded-t text-white bg-secondary"
-                          : "rounded-lg px-2 py-2 text-slate-700 font-medium hover:bg-slate-100 hover:text-slate-900"
+                          ? "rounded -mb-px mr-1 px-3 py-2 border-slate-300 border-l border-t border-r rounded-t text-white hover:text-primary bg-secondary"
+                          : "rounded-lg px-2 py-2 text-slate-700 font-medium hover:bg-tertiary hover:text-slate-900"
                       }
                     >
                       {items.name}
@@ -62,7 +62,7 @@ const MainNav = (props) => {
                   onClick={() => dispatch(logOutUser())}
                   to={"/"}
                   className={
-                    "rounded-lg px-2 py-2 text-slate-700 font-medium hover:bg-slate-100 hover:text-slate-900"
+                    "rounded-lg px-2 py-2 text-slate-700 font-medium hover:bg-tertiary hover:text-slate-900"
                   }
                 >
                   Log Out
