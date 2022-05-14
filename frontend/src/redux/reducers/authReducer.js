@@ -17,6 +17,7 @@ const authReducer = (state = initialState.auth, action) => {
         tokenExpiration: action.payload.tokenExpiration,
       };
     case LOG_OUT_USER:
+      console.log("logging out user");
       return {
         ...state,
         token: null,

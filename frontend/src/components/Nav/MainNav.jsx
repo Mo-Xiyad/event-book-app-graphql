@@ -1,10 +1,12 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { logOutUser } from "../../redux/actions";
 
 const MainNav = (props) => {
   const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const location = useLocation();
   const { pathname } = location;
   const menuItems = [
@@ -13,7 +15,6 @@ const MainNav = (props) => {
     { name: `Bookings`, path: `/bookings` },
     { name: `Events`, path: `/events` },
   ];
-  console.log(auth);
   return (
     <header className="bg-white fixed-top border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-teal-100">
       <div className="container flex flex-wrap justify-between items-center mx-auto py-2">
@@ -37,6 +38,7 @@ const MainNav = (props) => {
                   </NavLink>
                 </li>
               ))}
+
             {auth.token !== null &&
               menuItems
                 .filter((items) => items.name !== "Sign in")
@@ -54,6 +56,19 @@ const MainNav = (props) => {
                     </NavLink>
                   </li>
                 ))}
+            {auth.token !== null && (
+              <li>
+                <NavLink
+                  onClick={() => dispatch(logOutUser())}
+                  to={"/"}
+                  className={
+                    "rounded-lg px-2 py-2 text-slate-700 font-medium hover:bg-slate-100 hover:text-slate-900"
+                  }
+                >
+                  Log Out
+                </NavLink>
+              </li>
+            )}
           </ul>
         </nav>
       </div>

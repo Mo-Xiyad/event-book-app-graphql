@@ -5,3 +5,5 @@ export const setTokens = (userAuthInfo) => ({
   type: SET_AUTH_TOKEN,
   payload: userAuthInfo, // this is the payload that is being sent to the reducer as a object
 });
+
+export const logOutUser = () => ({ type: LOG_OUT_USER });

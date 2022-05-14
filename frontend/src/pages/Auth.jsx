@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import localStorage from "redux-persist/es/storage";
 import { setTokens } from "../redux/actions";
@@ -7,6 +7,7 @@ import { setTokens } from "../redux/actions";
 const Auth = () => {
   const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [formValues, setForm] = useState({
     email: null,
@@ -22,7 +23,7 @@ const Auth = () => {
     let requestBody = {
       query: `
         query {
-            login(email: "${formValues.email}", password: "${formValues.password}") {
+            login(email: "${email}", password: "${password}") {
                 token
                 userId
                 tokenExpiration
@@ -34,7 +35,7 @@ const Auth = () => {
       requestBody = {
         query: `
             mutation{
-                createUser(userInput: {email: "${formValues.email}", password: "${formValues.password}"}){
+                createUser(userInput: {email: "${email}", password: "${password}"}){
                     email
                 }
             }
@@ -48,8 +49,9 @@ const Auth = () => {
         headers: { "Content-Type": "application/json" },
       });
       if (response.ok) {
-        console.log(response);
         let { data } = await response.json();
+        // localStorage.setItem("TOKENS", JSON.stringify(data.login.token));
+        navigate("/events");
         dispatch(setTokens(data.login));
       } else {
         let { errors } = await response.json();
@@ -115,15 +117,13 @@ const Auth = () => {
               className="bg-secondary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="submit"
             >
-              {/* <Link to={`/`} activeClassName="current"> */}
               Submit
-              {/* </Link> */}
             </button>
             <Link
               className="inline-block align-baseline font-bold text-sm text-bg-primary hover:text-blue-800"
               to={`/`}
             >
-              {isLogin ? "Switch to Signup" : "Switch to Signin"}
+              {!auth.token ? "Switch to Signup" : "Switch to Signin"}
             </Link>
           </div>
         </form>
