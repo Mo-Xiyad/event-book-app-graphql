@@ -1,23 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import localStorage from "redux-persist/es/storage";
+import { setTokens } from "../redux/actions";
 
 const Auth = () => {
+  const auth = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const [isLogin, setIsLogin] = useState(true);
-  const [form, setForm] = useState({
+  const [formValues, setForm] = useState({
     email: null,
     password: null,
   });
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const { email, password } = form;
+    const { email, password } = formValues;
     if (email.trim().length === 0 || password.trim().length === 0) {
       return;
     }
     let requestBody = {
       query: `
         query {
-            login(email: "${form.email}", password: "${form.password}") {
+            login(email: "${formValues.email}", password: "${formValues.password}") {
                 token
                 userId
                 tokenExpiration
@@ -29,7 +34,7 @@ const Auth = () => {
       requestBody = {
         query: `
             mutation{
-                createUser(userInput: {email: "${form.email}", password: "${form.password}"}){
+                createUser(userInput: {email: "${formValues.email}", password: "${formValues.password}"}){
                     email
                 }
             }
@@ -42,15 +47,10 @@ const Auth = () => {
         body: JSON.stringify(requestBody),
         headers: { "Content-Type": "application/json" },
       });
-      //   console.log(response);
       if (response.ok) {
         console.log(response);
-        let data = await response.json();
-        const { errors } = data;
-        console.log(errors);
-        console.log(data);
-        // console.log(errors[0].message);
-        // setIsLogin(true);
+        let { data } = await response.json();
+        dispatch(setTokens(data.login));
       } else {
         let { errors } = await response.json();
         throw new Error("error: " + JSON.stringify(errors));
@@ -60,9 +60,9 @@ const Auth = () => {
       throw new Error(error);
     }
   };
-  //   useEffect(() => {
-  //     console.log(process.env.REACT_APP_URL);
-  //   }, [form]);
+  // useEffect(() => {
+  //   console.log(auth);
+  // }, [formValues]);
   return (
     <div className="flex h-screen justify-center">
       <div className="w-full max-w-sm self-center">
@@ -84,7 +84,7 @@ const Auth = () => {
               placeholder="Email"
               onChange={(e) =>
                 setForm({
-                  ...form,
+                  ...formValues,
                   email: e.target.value,
                 })
               }
@@ -104,14 +104,11 @@ const Auth = () => {
               placeholder="***********"
               onChange={(e) =>
                 setForm({
-                  ...form,
+                  ...formValues,
                   password: e.target.value,
                 })
               }
             />
-            {/* <p className="text-red-500 text-xs italic">
-              Please choose a password.
-            </p> */}
           </div>
           <div className="flex items-center justify-between">
             <button
@@ -124,8 +121,7 @@ const Auth = () => {
             </button>
             <Link
               className="inline-block align-baseline font-bold text-sm text-bg-primary hover:text-blue-800"
-              to={`/signIn`}
-              //   activeClassName="current"
+              to={`/`}
             >
               {isLogin ? "Switch to Signup" : "Switch to Signin"}
             </Link>

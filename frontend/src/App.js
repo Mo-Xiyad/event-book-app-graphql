@@ -6,6 +6,7 @@ import Bookings from "./pages/Bookings";
 import Events from "./pages/Events";
 import MainNav from "./components/Nav/MainNav";
 import Auth from "./pages/Auth";
+import { useState } from "react";
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
         <MainNav />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/signIn" element={<SignIn />} />
+          {/* <Route path="/signIn" element={<SignIn />} /> */}
           <Route path="/auth" element={<Auth />} />
           <Route path="/events" element={<Events />} />
           <Route path="/bookings" element={<Bookings />} />
