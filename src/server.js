@@ -15,8 +15,8 @@ const whitelist = [process.env.FE_LOCAL_URL, process.env.FE_PROD_URL];
 const corsOptions = {
   origin: function (origin, callback) {
     console.log("CURRENT ORIGIN AT:", origin);
-    if (whitelist.indexOf(origin) !== -1) {
-      // if (!origin || whitelist.indexOf(origin) !== -1) {
+    // if (whitelist.indexOf(origin) !== -1) {
+    if (!origin || whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
